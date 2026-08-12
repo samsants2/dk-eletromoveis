@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Tokens de tema — canais RGB para uso com opacidade do Tailwind
+   Tema claro é o padrão; .dark (no <html>) ativa o escuro.
+   Paleta: sand D9B698 · olive ABB369 · moss 5B7A3A
+           forest 3E632F · pine 234A29 · ink 182625
+   ============================================================ */
+:root {
+  --bg: 249 248 243; /* areia bem clara, leve viés quente */
+  --surface: 255 255 255;
+  --surface-2: 243 242 234;
+  --text: 24 38 37; /* ink */
+  --muted: 82 94 88;
+  --border: 24 38 37;
+  --primary: 62 99 47; /* forest */
+  --primary-ink: 255 255 255;
+  --secondary: 91 122 58; /* moss */
+  --accent: 171 179 105; /* olive */
+  --sand: 217 182 152;
+}
+
+.dark {
+  --bg: 18 26 24;
+  --surface: 24 38 37; /* ink */
+  --surface-2: 30 46 43;
+  --text: 235 238 231;
+  --muted: 168 180 170;
+  --border: 235 238 231;
+  --primary: 171 179 105; /* olive ganha destaque no escuro */
+  --primary-ink: 24 38 37;
+  --secondary: 122 150 90;
+  --accent: 171 179 105;
+  --sand: 217 182 152;
+}
+
+* {
+  border-color: rgb(var(--border) / 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Foco visível e acessível */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--primary));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Barra de rolagem discreta */
+::selection {
+  background: rgb(var(--accent) / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  /* Container padrão do site */
+  .container-dk {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  /* Botão base (estilo Material 3 "filled") */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    padding: 12px 22px;
+    border-radius: 999px;
+    transition: transform 0.12s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-primary {
+    background-color: rgb(var(--primary));
+    color: rgb(var(--primary-ink));
+    box-shadow: 0 1px 2px rgba(24, 38, 37, 0.14);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 6px 16px -6px rgba(24, 38, 37, 0.4);
+  }
+  .btn-outline {
+    border: 1px solid rgb(var(--border) / 0.28);
+    color: rgb(var(--text));
+    background: transparent;
+  }
+  .btn-outline:hover {
+    background: rgb(var(--surface-2));
+  }
+
+  /* Chip de filtro (Material 3) */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid rgb(var(--border) / 0.22);
+    color: rgb(var(--text) / 0.85);
+    background: transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+  }
+  .chip:hover {
+    background: rgb(var(--surface-2));
+  }
+  .chip[data-active="true"] {
+    background: rgb(var(--primary) / 0.14);
+    border-color: rgb(var(--primary) / 0.5);
+    color: rgb(var(--primary));
+  }
+
+  .card {
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--border) / 0.1);
+    border-radius: 16px;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgb(var(--secondary));
+  }
+}

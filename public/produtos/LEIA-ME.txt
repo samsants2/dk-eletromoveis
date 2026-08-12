@@ -1,0 +1,11 @@
+Coloque aqui as fotos reais dos produtos (formato .jpg ou .webp).
+
+Depois, referencie a imagem no arquivo src/data/products.ts, no campo "image":
+
+  image: "/produtos/geladeira-frost-free-375l.jpg"
+
+Enquanto não houver foto, o site mostra automaticamente um placeholder
+elegante com a paleta da marca e as iniciais do produto.
+
+Dica: use imagens com proporção próxima de 4:3 e largura mínima de 1000px
+para boa qualidade no catálogo e na página do produto.

@@ -1,0 +1,18 @@
+node_modules
+.next
+.git
+.gitignore
+npm-debug.log*
+Dockerfile
+.dockerignore
+README.md
+.env
+.env*.local
+.vscode
+# conteúdo enviado pelo admin (não vai para a imagem; fica no disco/volume)
+content/products.json
+uploads/
+public/produtos/*
+!public/produtos/LEIA-ME.txt
+public/midia/*
+!public/midia/.gitkeep

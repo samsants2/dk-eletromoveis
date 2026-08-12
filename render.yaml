@@ -1,0 +1,27 @@
+# Blueprint de deploy no Render (https://render.com)
+# Suba o repositório no GitHub e use "New > Blueprint" apontando para este arquivo.
+services:
+  - type: web
+    name: dk-eletromoveis
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false # defina no painel do Render (não versionar a senha)
+      - key: ADMIN_SECRET
+        generateValue: true # o Render gera um segredo aleatório
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /
+
+    # -------------------------------------------------------------------
+    # PERSISTÊNCIA (opcional, plano pago): sem um disco, os produtos e as
+    # imagens enviadas pela área admin são reiniciados a cada novo deploy.
+    # Para persistir, habilite um disco e monte-o (requer ajustar os caminhos
+    # de escrita para dentro do mountPath). Veja o README, seção Deploy.
+    # disk:
+    #   name: dk-data
+    #   mountPath: /app/persist
+    #   sizeGB: 1
