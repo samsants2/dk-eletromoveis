@@ -17,11 +17,16 @@ services:
     healthCheckPath: /
 
     # -------------------------------------------------------------------
-    # PERSISTÊNCIA (opcional, plano pago): sem um disco, os produtos e as
-    # imagens enviadas pela área admin são reiniciados a cada novo deploy.
-    # Para persistir, habilite um disco e monte-o (requer ajustar os caminhos
-    # de escrita para dentro do mountPath). Veja o README, seção Deploy.
+    # PERSISTÊNCIA (para adicionar/remover produtos e manter as imagens):
+    # requer INSTÂNCIA PAGA (o plano `free` não permite disco). Para ativar:
+    #   1. troque `plan: free` acima por `plan: starter`;
+    #   2. descomente o env DATA_DIR e o bloco `disk` abaixo (mesmo mountPath).
+    # Assim o app grava em /data/content e /data/uploads, que ficam no disco.
+    #
+    #   - key: DATA_DIR
+    #     value: /data
+    #
     # disk:
     #   name: dk-data
-    #   mountPath: /app/persist
+    #   mountPath: /data
     #   sizeGB: 1

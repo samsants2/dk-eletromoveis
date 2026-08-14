@@ -15,10 +15,16 @@ import { PRODUCTS_FILE } from "./paths";
  */
 const FILE = PRODUCTS_FILE;
 
+// Normaliza registros antigos que usavam `image` (string) para `images` (array).
+function normalize(p: Product & { image?: string }): Product {
+  if (!p.images && p.image) return { ...p, images: [p.image] };
+  return p;
+}
+
 async function readStore(): Promise<Product[]> {
   try {
     const raw = await fs.readFile(FILE, "utf8");
-    return JSON.parse(raw) as Product[];
+    return (JSON.parse(raw) as (Product & { image?: string })[]).map(normalize);
   } catch {
     // Primeira execução: semeia o arquivo a partir dos dados de exemplo.
     try {
@@ -64,7 +70,7 @@ export interface NewProductInput {
   available: boolean;
   featured: boolean;
   sellerId: string;
-  image?: string;
+  images?: string[];
 }
 
 function slugify(text: string): string {
@@ -100,7 +106,7 @@ export async function addProduct(input: NewProductInput): Promise<Product> {
     available: input.available,
     featured: input.featured,
     sellerId: input.sellerId,
-    image: input.image?.trim() || undefined,
+    images: (input.images ?? []).filter(Boolean),
   };
 
   list.unshift(product);
@@ -134,9 +140,9 @@ export async function updateProduct(
     available: patch.available ?? current.available,
     featured: patch.featured ?? current.featured,
     sellerId: patch.sellerId ?? current.sellerId,
-    // image: se a chave vier (mesmo vazia), aplica; "" remove a imagem.
-    image:
-      patch.image !== undefined ? patch.image.trim() || undefined : current.image,
+    // images: se a chave vier, substitui a galeria inteira.
+    images:
+      patch.images !== undefined ? patch.images.filter(Boolean) : current.images,
   };
 
   list[idx] = updated;

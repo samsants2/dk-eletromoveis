@@ -152,7 +152,7 @@ function ProductsTab({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [specs, setSpecs] = useState<Spec[]>([{ label: "", value: "" }]);
-  const [image, setImage] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -169,7 +169,7 @@ function ProductsTab({
     setEditingId(null);
     setForm(emptyForm);
     setSpecs([{ label: "", value: "" }]);
-    setImage("");
+    setImages([]);
     setMsg(null);
   }
 
@@ -188,19 +188,22 @@ function ProductsTab({
       featured: p.featured,
     });
     setSpecs(p.specs.length ? p.specs : [{ label: "", value: "" }]);
-    setImage(p.image ?? "");
+    setImages(p.images ?? []);
     setMsg(null);
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function onImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     setUploading(true);
     setMsg(null);
     try {
-      const path = await uploadFile(file, "produtos");
-      setImage(path);
+      const uploaded: string[] = [];
+      for (const f of Array.from(files)) {
+        uploaded.push(await uploadFile(f, "produtos"));
+      }
+      setImages((prev) => [...prev, ...uploaded]);
     } catch (err) {
       setMsg({ type: "err", text: (err as Error).message });
     } finally {
@@ -209,13 +212,21 @@ function ProductsTab({
     }
   }
 
+  function makePrimary(index: number) {
+    setImages((prev) => [prev[index], ...prev.filter((_, j) => j !== index)]);
+  }
+
+  function removeImage(index: number) {
+    setImages((prev) => prev.filter((_, j) => j !== index));
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setMsg(null);
     const payload = {
       ...form,
-      image, // string (pode ser "" para remover a imagem)
+      images,
       specs: specs.filter((s) => s.label && s.value),
     };
     try {
@@ -239,7 +250,7 @@ function ProductsTab({
         setMsg({ type: "ok", text: `Produto “${data.product.name}” cadastrado.` });
         setForm(emptyForm);
         setSpecs([{ label: "", value: "" }]);
-        setImage("");
+        setImages([]);
       }
     } catch (err) {
       setMsg({ type: "err", text: (err as Error).message });
@@ -290,41 +301,56 @@ function ProductsTab({
           </p>
         )}
 
-        {/* Upload / troca de imagem */}
+        {/* Galeria de imagens (múltiplas) */}
         <div className="mt-4">
-          <label className="mb-1.5 block text-sm font-medium">Imagem do produto</label>
-          <div className="flex items-center gap-4">
-            <div className="relative grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-xl border border-line/15 bg-surface-2 text-xs text-muted">
-              {image ? (
-                <Image src={image} alt="Prévia" fill className="object-cover" sizes="96px" />
-              ) : (
-                <span>Sem imagem</span>
-              )}
-            </div>
-            <div className="text-sm">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onImageChange}
-                className="block w-full text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-ink hover:file:brightness-105"
-              />
-              {uploading && <p className="mt-1 text-xs text-muted">Enviando imagem…</p>}
-              <p className="mt-1 text-xs text-muted">
-                {isEditing
-                  ? "Selecione um arquivo para substituir a imagem atual."
-                  : "JPG, PNG, WEBP ou AVIF, até 8 MB."}
-              </p>
-              {image && (
-                <button
-                  type="button"
-                  onClick={() => setImage("")}
-                  className="mt-1 text-xs text-[#b4632a] hover:underline"
+          <label className="mb-1.5 block text-sm font-medium">Imagens do produto</label>
+          {images.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {images.map((src, i) => (
+                <div
+                  key={src}
+                  className="group relative h-20 w-20 overflow-hidden rounded-lg border border-line/15 bg-surface-2"
                 >
-                  Remover imagem
-                </button>
-              )}
+                  <Image src={src} alt={`Imagem ${i + 1}`} fill className="object-cover" sizes="80px" />
+                  {i === 0 ? (
+                    <span className="absolute left-1 top-1 rounded bg-primary px-1 py-0.5 text-[9px] font-semibold text-primary-ink">
+                      principal
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => makePrimary(i)}
+                      title="Tornar principal"
+                      className="absolute left-1 top-1 rounded bg-black/55 px-1 py-0.5 text-[9px] font-semibold text-white opacity-0 transition group-hover:opacity-100"
+                    >
+                      ★ principal
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    title="Remover imagem"
+                    aria-label="Remover imagem"
+                    className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-black/60 text-xs text-white opacity-0 transition group-hover:opacity-100"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onImageChange}
+            className="block w-full text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-ink hover:file:brightness-105"
+          />
+          {uploading && <p className="mt-1 text-xs text-muted">Enviando imagem(ns)…</p>}
+          <p className="mt-1 text-xs text-muted">
+            Pode selecionar várias de uma vez. A primeira é a principal (passe o mouse
+            sobre uma miniatura para torná-la principal ou removê-la). Até 8 MB cada.
+          </p>
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -482,11 +508,16 @@ function ProductsTab({
               }`}
             >
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-surface-2">
-                {p.image ? (
-                  <Image src={p.image} alt={p.name} fill className="object-cover" sizes="56px" />
+                {p.images?.[0] ? (
+                  <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="56px" />
                 ) : (
                   <span className="grid h-full w-full place-items-center text-[10px] text-muted">
                     sem foto
+                  </span>
+                )}
+                {p.images && p.images.length > 1 && (
+                  <span className="absolute bottom-0.5 right-0.5 rounded bg-black/60 px-1 text-[9px] font-medium text-white">
+                    {p.images.length}
                   </span>
                 )}
               </div>
@@ -575,8 +606,7 @@ function MediaTab() {
       <div className="card p-6">
         <h2 className="text-lg font-bold">Enviar novas mídias</h2>
         <p className="mt-1 text-sm text-muted">
-          Banners, fotos institucionais e imagens de campanha. Ficam disponíveis em
-          <code className="mx-1 rounded bg-surface-2 px-1">/midia</code>
+          Banners, fotos institucionais e imagens de campanha. Ficam disponíveis
           para uso no site.
         </p>
         <input

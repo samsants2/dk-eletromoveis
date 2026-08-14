@@ -4,9 +4,7 @@ import { Logo } from "./Logo";
 import { MapPinIcon, PhoneIcon, MailIcon } from "./icons";
 
 export function Footer() {
-  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(
-    site.address.mapsQuery,
-  )}&output=embed`;
+  const mapSrc = site.address.mapsEmbedUrl;
 
   return (
     <footer className="mt-24 border-t border-line/10 bg-surface-2/60">

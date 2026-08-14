@@ -25,8 +25,8 @@ export interface Product {
   available: boolean;
   featured: boolean;
   sellerId: string; // vendedor responsável pelo CTA
-  /** Caminho da foto em /public/produtos. Se ausente, mostra placeholder. */
-  image?: string;
+  /** Galeria de fotos do produto; a primeira é a principal. Vazio = placeholder. */
+  images?: string[];
 }
 
 export interface Seller {

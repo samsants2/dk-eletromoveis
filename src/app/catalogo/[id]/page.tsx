@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { getProduct, getProducts } from "@/lib/store";
 import { getSeller, sellers } from "@/data/sellers";
 import { CATEGORY_LABELS, LINE_LABELS } from "@/lib/types";
-import { ProductImage } from "@/components/ProductImage";
+import { ProductGallery } from "@/components/ProductGallery";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ProductCard } from "@/components/ProductCard";
 import { productMessage } from "@/lib/whatsapp";
@@ -50,10 +50,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <ProductImage
-          product={product}
-          className="aspect-[4/3] w-full rounded-2xl shadow-e2"
-          sizes="(max-width: 1024px) 100vw, 50vw"
+        <ProductGallery
+          images={product.images ?? []}
+          name={product.name}
+          category={product.category}
+          code={product.code}
         />
 
         <div>

@@ -13,9 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContatoPage() {
-  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(
-    site.address.mapsQuery,
-  )}&output=embed`;
+  const mapSrc = site.address.mapsEmbedUrl;
 
   return (
     <div className="container-dk py-12">

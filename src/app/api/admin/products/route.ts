@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     available: body.available ?? true,
     featured: body.featured ?? false,
     sellerId: body.sellerId!,
-    image: body.image,
+    images: body.images,
   });
 
   return NextResponse.json({ ok: true, product }, { status: 201 });

@@ -69,10 +69,6 @@ export function AdminLogin() {
             {loading ? "Entrando…" : "Entrar"}
           </button>
         </form>
-
-        <p className="mt-4 text-center text-xs text-muted">
-          Senha padrão de desenvolvimento: <code>dkadmin</code> (troque em produção).
-        </p>
       </div>
     </div>
   );

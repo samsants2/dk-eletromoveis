@@ -31,6 +31,9 @@ next-env.d.ts
 # editor
 .idea/
 
+# README removido do repositório (continha senha padrão e link do /admin)
+/README.md
+
 # conteúdo gerado/enviado pela área administrativa
 /content/products.json
 /uploads/

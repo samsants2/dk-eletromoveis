@@ -3,9 +3,8 @@ import type { Product } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 
 /**
- * Mostra a foto do produto quando existir em /public/produtos,
- * ou um placeholder elegante com a paleta da marca (para o MVP,
- * antes das fotos reais entrarem).
+ * Mostra a foto principal do produto (primeira da galeria) quando existir,
+ * ou um placeholder elegante com a paleta da marca.
  */
 export function ProductImage({
   product,
@@ -16,11 +15,13 @@ export function ProductImage({
   className?: string;
   sizes?: string;
 }) {
-  if (product.image) {
+  const src = product.images?.[0];
+
+  if (src) {
     return (
       <div className={`relative overflow-hidden ${className}`}>
         <Image
-          src={product.image}
+          src={src}
           alt={product.name}
           fill
           sizes={sizes ?? "(max-width: 768px) 100vw, 33vw"}
