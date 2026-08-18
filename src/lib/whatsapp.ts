@@ -20,3 +20,13 @@ export function generalMessage(): string {
 export function productWhatsappLink(product: Product, seller: Seller): string {
   return whatsappLink(seller.phone, productMessage(product));
 }
+
+/** Formata um número E.164 brasileiro (5562982509798) para exibição: (62) 98250-9798. */
+export function formatBRPhone(phone: string): string {
+  const d = phone.replace(/\D/g, "").replace(/^55/, "");
+  const ddd = d.slice(0, 2);
+  const rest = d.slice(2);
+  if (rest.length === 9) return `(${ddd}) ${rest.slice(0, 5)}-${rest.slice(5)}`;
+  if (rest.length === 8) return `(${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
+  return phone;
+}

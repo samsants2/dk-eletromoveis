@@ -115,15 +115,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
           {/* CTA */}
           <div className="mt-8 card p-5">
-            <p className="text-sm text-muted">
-              Fale com <b className="text-content">{seller.name}</b> — {seller.role}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               <WhatsAppButton
                 sellerId={seller.id}
                 message={productMessage(product)}
-                label="Pedir informações"
-                showSeller
+                label={`Falar com ${seller.name}`}
               />
               {sellers
                 .filter((s) => s.id !== seller.id)

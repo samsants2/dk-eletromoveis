@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { site, businessHours } from "@/config/site";
+import { sellers } from "@/data/sellers";
+import { formatBRPhone } from "@/lib/whatsapp";
 import { Logo } from "./Logo";
 import { MapPinIcon, PhoneIcon, MailIcon } from "./icons";
 
@@ -43,10 +45,14 @@ export function Footer() {
                 {site.address.city} — {site.address.state}, {site.address.zip}
               </span>
             </li>
-            <li className="flex items-center gap-2.5">
-              <PhoneIcon width={18} height={18} className="shrink-0 text-secondary" />
-              <span>{site.phoneDisplay}</span>
-            </li>
+            {sellers.map((s) => (
+              <li key={s.id} className="flex items-center gap-2.5">
+                <PhoneIcon width={18} height={18} className="shrink-0 text-secondary" />
+                <span>
+                  {s.name}: {formatBRPhone(s.phone)}
+                </span>
+              </li>
+            ))}
             <li className="flex items-center gap-2.5">
               <MailIcon width={18} height={18} className="shrink-0 text-secondary" />
               <span>{site.email}</span>

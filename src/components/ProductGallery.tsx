@@ -52,14 +52,14 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2 shadow-e2">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2 shadow-e2">
         <Image
           src={current}
           alt={name}
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-contain"
         />
       </div>
 
