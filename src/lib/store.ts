@@ -15,6 +15,13 @@ import { PRODUCTS_FILE } from "./paths";
  */
 const FILE = PRODUCTS_FILE;
 
+// Auto-seed dos produtos de exemplo: permitido apenas em desenvolvimento
+// (ou se SEED_PRODUCTS=true for definido explicitamente). Em produção, um
+// armazenamento vazio NÃO é preenchido com exemplos — evita que dados reais
+// sejam mascarados/sobrescritos por engano.
+const SEED_ALLOWED =
+  process.env.NODE_ENV !== "production" || process.env.SEED_PRODUCTS === "true";
+
 // Normaliza registros antigos que usavam `image` (string) para `images` (array).
 function normalize(p: Product & { image?: string }): Product {
   if (!p.images && p.image) return { ...p, images: [p.image] };
@@ -48,8 +55,10 @@ async function readForDisplay(): Promise<Product[]> {
   try {
     const data = await readFileOrNull();
     if (data !== null) return data;
+    // Arquivo não existe.
+    if (!SEED_ALLOWED) return []; // produção: catálogo vazio, sem escrever nada
     try {
-      await writeStore(seed); // primeira execução: cria o arquivo
+      await writeStore(seed); // dev: cria o arquivo com os exemplos
     } catch {
       /* somente-leitura: segue com o seed em memória */
     }
@@ -57,7 +66,7 @@ async function readForDisplay(): Promise<Product[]> {
   } catch {
     // Erro real de leitura: mostra o seed em memória SEM tocar no arquivo,
     // preservando os produtos já salvos no disco.
-    return seed;
+    return SEED_ALLOWED ? seed : [];
   }
 }
 
@@ -65,7 +74,8 @@ async function readForDisplay(): Promise<Product[]> {
 // LANÇA — é melhor abortar a operação do que sobrescrever os produtos salvos.
 async function readForMutation(): Promise<Product[]> {
   const data = await readFileOrNull();
-  return data ?? [...seed];
+  if (data !== null) return data;
+  return SEED_ALLOWED ? [...seed] : []; // produção parte de lista vazia
 }
 
 export async function getProducts(): Promise<Product[]> {
