@@ -21,20 +21,20 @@ function normalize(p: Product & { image?: string }): Product {
   return p;
 }
 
-async function readStore(): Promise<Product[]> {
+// Lê o arquivo de produtos.
+//   - Sucesso → lista de produtos
+//   - ENOENT (arquivo não existe) → null
+//   - Qualquer outro erro (permissão, JSON inválido, disco) → LANÇA,
+//     para nunca arriscar sobrescrever dados que existem no disco.
+async function readFileOrNull(): Promise<Product[] | null> {
+  let raw: string;
   try {
-    const raw = await fs.readFile(FILE, "utf8");
-    return (JSON.parse(raw) as (Product & { image?: string })[]).map(normalize);
-  } catch {
-    // Primeira execução: semeia o arquivo a partir dos dados de exemplo.
-    try {
-      await fs.mkdir(path.dirname(FILE), { recursive: true });
-      await fs.writeFile(FILE, JSON.stringify(seed, null, 2), "utf8");
-    } catch {
-      /* ambiente somente-leitura: segue com o seed em memória */
-    }
-    return seed;
+    raw = await fs.readFile(FILE, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw err;
   }
+  return (JSON.parse(raw) as (Product & { image?: string })[]).map(normalize);
 }
 
 async function writeStore(list: Product[]): Promise<void> {
@@ -42,20 +42,46 @@ async function writeStore(list: Product[]): Promise<void> {
   await fs.writeFile(FILE, JSON.stringify(list, null, 2), "utf8");
 }
 
+// Leitura para EXIBIÇÃO: tolerante e nunca sobrescreve dados existentes.
+// Só cria o arquivo (com o seed) quando ele realmente não existe.
+async function readForDisplay(): Promise<Product[]> {
+  try {
+    const data = await readFileOrNull();
+    if (data !== null) return data;
+    try {
+      await writeStore(seed); // primeira execução: cria o arquivo
+    } catch {
+      /* somente-leitura: segue com o seed em memória */
+    }
+    return seed;
+  } catch {
+    // Erro real de leitura: mostra o seed em memória SEM tocar no arquivo,
+    // preservando os produtos já salvos no disco.
+    return seed;
+  }
+}
+
+// Leitura para GRAVAÇÃO: estrita. Se o arquivo existe mas não pode ser lido,
+// LANÇA — é melhor abortar a operação do que sobrescrever os produtos salvos.
+async function readForMutation(): Promise<Product[]> {
+  const data = await readFileOrNull();
+  return data ?? [...seed];
+}
+
 export async function getProducts(): Promise<Product[]> {
-  return readStore();
+  return readForDisplay();
 }
 
 export async function getProduct(id: string): Promise<Product | undefined> {
-  return (await readStore()).find((p) => p.id === id);
+  return (await readForDisplay()).find((p) => p.id === id);
 }
 
 export async function getFeatured(): Promise<Product[]> {
-  return (await readStore()).filter((p) => p.featured);
+  return (await readForDisplay()).filter((p) => p.featured);
 }
 
 export async function getBrands(): Promise<string[]> {
-  return Array.from(new Set((await readStore()).map((p) => p.brand))).sort();
+  return Array.from(new Set((await readForDisplay()).map((p) => p.brand))).sort();
 }
 
 export interface NewProductInput {
@@ -84,7 +110,7 @@ function slugify(text: string): string {
 }
 
 export async function addProduct(input: NewProductInput): Promise<Product> {
-  const list = await readStore();
+  const list = await readForMutation();
 
   let id = slugify(input.name) || `produto-${Date.now()}`;
   if (list.some((p) => p.id === id)) id = `${id}-${Date.now().toString(36)}`;
@@ -120,7 +146,7 @@ export async function updateProduct(
   id: string,
   patch: UpdateProductInput,
 ): Promise<Product | null> {
-  const list = await readStore();
+  const list = await readForMutation();
   const idx = list.findIndex((p) => p.id === id);
   if (idx === -1) return null;
 
@@ -151,7 +177,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string): Promise<boolean> {
-  const list = await readStore();
+  const list = await readForMutation();
   const next = list.filter((p) => p.id !== id);
   if (next.length === list.length) return false;
   await writeStore(next);
