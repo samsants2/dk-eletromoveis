@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { site, businessHours } from "@/config/site";
 import { ContactForm } from "@/components/ContactForm";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { generalMessage } from "@/lib/whatsapp";
+import { generalMessage, formatBRPhone } from "@/lib/whatsapp";
 import { sellers } from "@/data/sellers";
 import { MapPinIcon, PhoneIcon, MailIcon } from "@/components/icons";
 
@@ -63,10 +63,14 @@ export default function ContatoPage() {
                 {site.address.city} — {site.address.state}, {site.address.zip}
               </span>
             </li>
-            <li className="flex items-center gap-2.5">
-              <PhoneIcon width={18} height={18} className="shrink-0 text-secondary" />
-              {site.phoneDisplay}
-            </li>
+            {sellers.map((s) => (
+              <li key={s.id} className="flex items-center gap-2.5">
+                <PhoneIcon width={18} height={18} className="shrink-0 text-secondary" />
+                <span>
+                  {s.name}: {formatBRPhone(s.phone)}
+                </span>
+              </li>
+            ))}
             <li className="flex items-center gap-2.5">
               <MailIcon width={18} height={18} className="shrink-0 text-secondary" />
               {site.email}

@@ -54,7 +54,7 @@ export function ProductGallery({
   return (
     <div className="flex flex-col gap-3">
       <div
-        className="relative w-full overflow-hidden rounded-2xl bg-surface-2 shadow-e2"
+        className="relative w-full overflow-hidden rounded-2xl bg-bg shadow-e2"
         style={{ aspectRatio: ratio ? String(ratio) : "4 / 3", maxHeight: "72vh" }}
       >
         <Image
