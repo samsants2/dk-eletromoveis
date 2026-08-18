@@ -21,6 +21,7 @@ export function ProductGallery({
   code: string;
 }) {
   const [active, setActive] = useState(0);
+  const [ratio, setRatio] = useState<number | null>(null);
 
   if (!images.length) {
     const seed = code.charCodeAt(code.length - 1);
@@ -52,14 +53,24 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-2 shadow-e2">
+      <div
+        className="relative w-full overflow-hidden rounded-2xl bg-surface-2 shadow-e2"
+        style={{ aspectRatio: ratio ? String(ratio) : "4 / 3", maxHeight: "72vh" }}
+      >
         <Image
+          key={current}
           src={current}
           alt={name}
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
           className="object-contain"
+          onLoad={(e) => {
+            const t = e.currentTarget;
+            if (t.naturalWidth && t.naturalHeight) {
+              setRatio(t.naturalWidth / t.naturalHeight);
+            }
+          }}
         />
       </div>
 
@@ -69,7 +80,10 @@ export function ProductGallery({
             <button
               key={src}
               type="button"
-              onClick={() => setActive(i)}
+              onClick={() => {
+                setActive(i);
+                setRatio(null);
+              }}
               aria-label={`Ver foto ${i + 1}`}
               aria-current={i === active}
               className={`relative h-16 w-16 overflow-hidden rounded-lg border transition ${
