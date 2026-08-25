@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/ContactForm";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { generalMessage, formatBRPhone } from "@/lib/whatsapp";
 import { sellers } from "@/data/sellers";
-import { MapPinIcon, PhoneIcon, MailIcon } from "@/components/icons";
+import { MapPinIcon, PhoneIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Contato e Localização",
@@ -71,10 +71,6 @@ export default function ContatoPage() {
                 </span>
               </li>
             ))}
-            <li className="flex items-center gap-2.5">
-              <MailIcon width={18} height={18} className="shrink-0 text-secondary" />
-              {site.email}
-            </li>
             <li className="pt-1 text-xs">{businessHours}</li>
           </ul>
 
