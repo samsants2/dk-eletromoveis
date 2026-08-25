@@ -30,4 +30,4 @@ export const site = {
   ],
 } as const;
 
-export const businessHours = "Seg. a Sex., 8h às 17h";
+export const businessHours = "Seg. a Sex., 8h às 17h · Sáb., 8h às 12h";

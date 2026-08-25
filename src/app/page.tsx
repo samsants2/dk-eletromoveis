@@ -26,7 +26,9 @@ export default async function HomePage() {
               className="card group flex items-center justify-between gap-4 p-7 shadow-e1 transition-shadow hover:shadow-e3"
             >
               <div>
-                <h3 className="text-xl font-bold">{CATEGORY_LABELS[cat]}</h3>
+                <h3 className="text-xl font-bold">
+                  {cat === "eletromoveis" ? "Eletro" : CATEGORY_LABELS[cat]}
+                </h3>
                 <p className="mt-1 text-sm text-muted">
                   {cat === "moveis"
                     ? "Salas, quartos, cozinhas e escritório."

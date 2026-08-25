@@ -129,7 +129,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                     sellerId={s.id}
                     message={productMessage(product)}
                     label={`Falar com ${s.name}`}
-                    variant="outline"
+                    variant="primary"
                   />
                 ))}
             </div>

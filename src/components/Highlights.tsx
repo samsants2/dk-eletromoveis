@@ -53,7 +53,7 @@ export function Highlights({ products }: { products: Product[] }) {
               key={p.id}
               className="w-[280px] shrink-0 snap-start sm:w-[320px]"
             >
-              <ProductCard product={p} />
+              <ProductCard product={p} showCta={false} />
             </div>
           ))}
         </div>

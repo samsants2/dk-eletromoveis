@@ -3,7 +3,7 @@ import { site, businessHours } from "@/config/site";
 import { sellers } from "@/data/sellers";
 import { formatBRPhone } from "@/lib/whatsapp";
 import { Logo } from "./Logo";
-import { MapPinIcon, PhoneIcon, MailIcon } from "./icons";
+import { MapPinIcon, PhoneIcon } from "./icons";
 
 export function Footer() {
   const mapSrc = site.address.mapsEmbedUrl;
@@ -53,10 +53,6 @@ export function Footer() {
                 </span>
               </li>
             ))}
-            <li className="flex items-center gap-2.5">
-              <MailIcon width={18} height={18} className="shrink-0 text-secondary" />
-              <span>{site.email}</span>
-            </li>
             <li className="text-xs">{businessHours}</li>
           </ul>
 

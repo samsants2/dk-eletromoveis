@@ -8,7 +8,7 @@ export const sellers: Seller[] = [
   {
     id: "walter",
     name: "Walter",
-    role: "Gerente comercial",
+    role: "Consultor de vendas",
     phone: "5562982509798",
   },
   {

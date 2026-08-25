@@ -6,7 +6,13 @@ import { WhatsAppButton } from "./WhatsAppButton";
 import { productMessage } from "@/lib/whatsapp";
 import { getSeller } from "@/data/sellers";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  showCta = true,
+}: {
+  product: Product;
+  showCta?: boolean;
+}) {
   const seller = getSeller(product.sellerId);
 
   return (
@@ -46,12 +52,14 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-auto flex items-center justify-between pt-2">
           <span className="font-mono text-xs text-muted">Cód. {product.code}</span>
-          <WhatsAppButton
-            sellerId={seller.id}
-            message={productMessage(product)}
-            label="Consultar"
-            className="!px-4 !py-2 text-sm"
-          />
+          {showCta && (
+            <WhatsAppButton
+              sellerId={seller.id}
+              message={productMessage(product)}
+              label="Consultar"
+              className="!px-4 !py-2 text-sm"
+            />
+          )}
         </div>
       </div>
     </article>
